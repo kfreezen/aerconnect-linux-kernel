@@ -1,0 +1,17 @@
+#!/bin/bash
+
+mkdir ~/kernel-staging/boot
+cp arch/arm/boot/uImage ~/kernel-staging/boot
+cp arch/arm/boot/dts/imx6*ts*.dtb ~/kernel-staging/boot
+mv ~/kernel-staging/boot/imx6q-ts4900-3f.dtb ~/kernel-staging/boot/imx6q-ts4900-3f.dtb.old
+cp ~/kernel-staging/boot/imx6q-ts4900-2.dtb ~/kernel-staging/boot/imx6q-ts4900-3f.dtb
+#INSTALL_MOD_PATH="~/kernel-staging" make modules_install
+#INSTALL_HDR_PATH="~/kernel-staging" make headers_install
+
+# Next we want to write a script to copy everything via scp to the aerconnect.
+cp scp-image ~/kernel-staging
+cp deploy-image ~/kernel-staging
+
+cd ~/kernel-staging
+
+#sh scp-image $1

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ssh aercon@$1 "mkdir ~/kernel-boot; mkdir ~/kernel-deploy"
+scp ~/kernel-staging/boot/uImage aercon@$1:~/kernel-boot
+scp ~/kernel-staging/boot/*.dtb aercon@$1:~/kernel-boot
+scp ~/kernel-staging/deploy-image aercon@$1:~/kernel-deploy
+#scp -r ~/kernel-staging/lib aercon@$1:~/kernel-deploy/
