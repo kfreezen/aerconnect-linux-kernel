@@ -40,7 +40,6 @@
  */
 
 #include <dt-bindings/interrupt-controller/irq.h>
-#include <dt-bindings/gpio/gpio.h>
 
 / {
 	aliases {
@@ -51,12 +50,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_leds1>;
 		compatible = "gpio-leds";
-		
-		/*hb-led {
-			label = "hb-led";
-			gpios = <&gpio3 14 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};*/
 
 		green-led {
 			label = "green-led";
@@ -141,7 +134,7 @@
 
 	flash: n25q064@0 {
 		compatible = "st,n25q064";
-		spi-max-frequency = <10000000>;
+		spi-max-frequency = <20000000>;
 		reg = <0>;
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -172,7 +165,7 @@
 		compatible = "max3100-ts";
 		reg = <0>;
 		interrupt-parent = <&gpio1>;
-		interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
+		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
 		spi-max-frequency = <10000000>;
 		loopback = <0>;
 		crystal = <1>;
@@ -202,13 +195,13 @@
 		reg = <0x6f>;
 	};
 
-	gpio8: gpio@28 {
-		compatible = "technologic,ts4900-gpio";
+	gpio8: tsgpio@28 {
+		compatible = "technologic,tsgpio";
 		reg = <0x28>;
 		#gpio-cells = <2>;
 		gpio-controller;
 		base = <224>;
-		ngpios = <32>;
+		ngpio = /bits/ 16 <32>;
 	};
 };
 
@@ -241,8 +234,8 @@
 				MX6QDL_PAD_CSI0_DAT8__ECSPI2_SCLK	0x100b1
 				MX6QDL_PAD_CSI0_DAT9__ECSPI2_MOSI	0x100b1
 				MX6QDL_PAD_CSI0_DAT10__ECSPI2_MISO	0x100b1
-				MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29	0x000b1 /* Offboard CS0# */
-				MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02	0x000b1 /* FPGA CS1# */
+				MX6QDL_PAD_CSI0_DAT11__GPIO5_IO29	0x100b1 /* Offboard CS0# */
+				MX6QDL_PAD_CSI0_DAT16__GPIO6_IO02	0x100b1 /* FPGA CS1# */
 				MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21	0x1b0b1 /* FPGA_RESET# */
 				MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20	0x1b0b1 /* FPGA_DONE */
 				MX6QDL_PAD_GPIO_3__XTALOSC_REF_CLK_24M	0x10    /* FPGA 24MHZ */
@@ -397,7 +390,6 @@
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x1b0b1 /* RED_LED# */
 				MX6QDL_PAD_EIM_CS1__GPIO2_IO24		0x1b0b1 /* GREEN_LED# */
-				MX6QDL_PAD_EIM_DA14__GPIO3_IO14		0x1b0b1 /* MUX_AD_14 */
 			>;
 		};
 
@@ -448,6 +440,7 @@
 				MX6QDL_PAD_EIM_DA11__GPIO3_IO11		0x1b0b1 /* MUX_AD_11 */
 				MX6QDL_PAD_EIM_DA12__GPIO3_IO12		0x1b0b1 /* MUX_AD_12 */
 				MX6QDL_PAD_EIM_DA13__GPIO3_IO13		0x1b0b1 /* MUX_AD_13 */
+				MX6QDL_PAD_EIM_DA14__GPIO3_IO14		0x1b0b1 /* MUX_AD_14 */
 				MX6QDL_PAD_EIM_DA15__GPIO3_IO15		0x1b0b1 /* MUX_AD_15 */
 				MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16	0x1b0b1 /* LCD_CLK */
 				MX6QDL_PAD_DI0_PIN15__GPIO4_IO17	0x1b0b1 /* DE */
@@ -477,6 +470,7 @@
 				MX6QDL_PAD_DISP0_DAT21__GPIO5_IO15	0x1b0b1
 				MX6QDL_PAD_DISP0_DAT22__GPIO5_IO16	0x1b0b1
 				MX6QDL_PAD_DISP0_DAT23__GPIO5_IO17	0x1b0b1
+				
 			>;
 		};
 	};

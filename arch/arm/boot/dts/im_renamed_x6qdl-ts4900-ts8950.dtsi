@@ -1,6 +1,6 @@
-/*  GS First try at LCD timings
+/*
  * Copyright 2017 Technologic Systems
- * 
+ *
  * This file is dual-licensed: you can use it either under the terms
  * of the GPL or the X11 license, at your option. Note that this dual
  * licensing only applies to this file, and not this project as a
@@ -79,8 +79,8 @@
 	mxcfb0: fb@0 {
 		compatible = "fsl,mxc_sdc_fb";
 		disp_dev = "ldb";
-		interface_pix_fmt = "RGB24";
-		default_bpp = <24>;
+		interface_pix_fmt = "RGB666";
+		default_bpp = <16>;
 		int_clk = <0>;
 		late_init = <0>;
 		status = "okay";
@@ -188,7 +188,7 @@
 
 	lvds-channel@0 {
 		fsl,data-mapping = "spwg";
-		fsl,data-width = <24>;
+		fsl,data-width = <18>;
 		status = "okay";
 		primary;
 		crtc = "ipu1-di0";
@@ -198,13 +198,13 @@
 			timing0: hantronix-svga1 {
 				clock-frequency = <40000000>;
 				hactive = <800>;
-				vactive = <480>;
-				hback-porch = <88>;
-				hfront-porch = <40>;
-				vback-porch = <32>;
-				vfront-porch = <13>;
-				hsync-len = <48>;
-				vsync-len = <3>;
+				vactive = <600>;
+				hback-porch = <46>;
+				hfront-porch = <210>;
+				vback-porch = <23>;
+				vfront-porch = <12>;
+				hsync-len = <20>;
+				vsync-len = <10>;
 				de-active = <1>;
 				hsync-active = <1>;
 				vsync-active = <1>;

@@ -64,8 +64,8 @@
 	backlight_lcd {
 		compatible = "pwm-backlight";
 		pwms = <&pwm3 0 5000000>;
-		brightness-levels = <0 128 140 160 180 200 220 240 255>;
-		default-brightness-level = <1>;
+		brightness-levels = <0 32 64 128 140 160 180 200 220 240 255>;
+		default-brightness-level = <6>;
 		power-supply = <&reg_3p3v>;
 	};
 
@@ -96,6 +96,12 @@
 		en-usb-5v {
 			label = "en-usb-5v";
 			gpios = <&gpio2 22 0>;
+			default-state = "on";
+		};
+
+		home-button-led {
+			label = "home-button-led";
+			gpios = <&gpio3 14 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 	};
