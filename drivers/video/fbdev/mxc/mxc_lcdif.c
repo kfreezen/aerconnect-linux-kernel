@@ -60,8 +60,25 @@ static struct fb_videomode lcdif_modedb[] = {
 	0,
 	FB_VMODE_NONINTERLACED,
 	0,},
+	{
+		/* Newhaven 7" ASXV 800x480 @ 60 Hz , pixel clk @ 30MHz */
+		"NHD-7-800480",
+		60, /* refresh rate in Hz */
+		800, /* xres in pixels */
+		480, /* yres in pixels */
+		30000, /* pixel clock in picoseconds (dot clock or just clock) */
+		88, /* left_margin (Horizontal Back Porch) in pixel clock units */
+		40, /* right_margin (Horizontal Front Porch) in pixel clock units */
+		32, /* upper_margin (Vertical Back Porch) in pixel clock units */
+		13, /* lower_margin (Vertical Front Porch) in pixel clock units */
+		48, /* hsync_len (Hsync pulse width) */
+		3, /* vsync_len (Vsync pulse width) */
+		0, /* sync (Polarity on the Data Enable) */
+		FB_VMODE_NONINTERLACED, /* vmode (Video Mode) */
+		0, /* flags */
+	},
 };
-static int lcdif_modedb_sz = ARRAY_SIZE(lcdif_modedb);
+static int lcdif_modedb_sz = ARRAY_SIZE(lcdif_modedb); 
 
 static int lcdif_init(struct mxc_dispdrv_handle *disp,
 	struct mxc_dispdrv_setting *setting)
