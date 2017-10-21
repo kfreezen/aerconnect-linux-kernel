@@ -52,12 +52,6 @@
 		pinctrl-0 = <&pinctrl_leds1>;
 		compatible = "gpio-leds";
 		
-		/*hb-led {
-			label = "hb-led";
-			gpios = <&gpio3 14 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};*/
-
 		green-led {
 			label = "green-led";
 			gpios = <&gpio2 24 GPIO_ACTIVE_LOW>;

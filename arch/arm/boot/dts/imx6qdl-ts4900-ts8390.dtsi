@@ -98,6 +98,13 @@
 			gpios = <&gpio2 22 0>;
 			default-state = "on";
 		};
+
+		hb-led {
+			label = "hb-led";
+			gpios = <&gpio3 14 0>;
+			default-state = "on";
+		};
+
 	};
 
 	mxcfb0: fb@0 {
@@ -140,7 +147,22 @@
 		ssi-controller = <&ssi1>;
 	};
 
-	touchscreen_spi {
+	touchscreen_i2c: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
+		reg = <0x38>;
+		
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_touch>;
+		
+		status = "okay";
+		
+		interrupt-parent = <&gpio2>;
+		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
+		
+		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
+	};
+
+	/*touchscreen_spi {
 		compatible = "spi-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_touch>;
@@ -177,7 +199,7 @@
 			ti,pendown-gpio-debounce = <100000>;
 			linux,wakeup;
 		};
-	};
+	};*/
 
 	usbeth: smsc95xx {
 		status = "okay";
@@ -243,6 +265,15 @@
 			>;
 		};
 
+		pinctrl_touch: touchi2cgrp {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_D17__I2C3_SCL	0x4001b8b1
+				MX6QDL_PAD_EIM_D18__I2C3_SDA	0x4001b8b1
+				MX6QDL_PAD_EIM_A18__GPIO2_IO20	0x4001b8b1 /* Interrupt */
+				MX6QDL_PAD_EIM_OE__GPIO2_IO25	0x4001b8b1 /* RESET */
+			>;
+		};
+#if 0
 		pinctrl_touch: touchspigrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_DA11__GPIO3_IO11		0x1b088 /* TOUCH_WAKE# */
@@ -252,6 +283,13 @@
 				MX6QDL_PAD_EIM_DA15__GPIO3_IO15		0x1b088 /* TOUCH_CLK */
 			>;
 		};
+
+		/*
+			I2C touch panel, uses module I2C3. The pins are SCL: CN1-56, SDA: CN1-58.
+			The interrupt pin is CN1-81 and reset is CN1-83.
+			J3 in schematic.
+		*/
+#endif
 
 		pinctrl_pwm3: pwm3grp {
 			fsl,pins = <

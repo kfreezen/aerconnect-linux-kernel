@@ -146,7 +146,7 @@
 		ssi-controller = <&ssi1>;
 	};
 
-	touchscreen_spi {
+	/*touchscreen_spi {
 		compatible = "spi-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_touch>;
@@ -183,7 +183,7 @@
 			ti,pendown-gpio-debounce = <100000>;
 			linux,wakeup;
 		};
-	};
+	};*/
 
 	usbeth: smsc95xx {
 		status = "okay";
@@ -248,7 +248,7 @@
 				MX6QDL_PAD_DISP0_DAT23__IPU1_DISP0_DATA23	0xe0
 			>;
 		};
-
+#if 0
 		pinctrl_touch: touchspigrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_DA11__GPIO3_IO11		0x1b088 /* TOUCH_WAKE# */
@@ -258,6 +258,10 @@
 				MX6QDL_PAD_EIM_DA15__GPIO3_IO15		0x1b088 /* TOUCH_CLK */
 			>;
 		};
+
+		/* Look at J3 on schematic:Display for info on how to change this */
+
+#endif
 
 		pinctrl_pwm3: pwm3grp {
 			fsl,pins = <
