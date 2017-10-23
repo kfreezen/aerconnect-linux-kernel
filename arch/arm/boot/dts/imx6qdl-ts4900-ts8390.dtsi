@@ -47,9 +47,10 @@
 		ethernet0 = &fec;
 		ethernet1 = &usbeth;
 		mxcfb0 = &mxcfb0;
-		i2c3 = &adc_i2c;
+		/*i2c3 = &adc_i2c;*/
 	};
 
+#if 0
 	adc_i2c: adc-i2c {
 		compatible = "i2c-gpio";
 		status = "okay";
@@ -60,6 +61,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
+#endif
 
 	backlight_lcd {
 		compatible = "pwm-backlight";
@@ -146,58 +148,6 @@
 		mux-int-port = <1>;
 		ssi-controller = <&ssi1>;
 	};
-
-	touchscreen_i2c: ft5x06_ts@38 {
-		compatible = "ft5x06-ts";
-		reg = <0x38>;
-		
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_touch>;
-		
-		status = "okay";
-		interrupts-extended = <&gpio2 20 IRQ_TYPE_EDGE_FALLING>;
-		
-		wakeup-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
-	};
-
-	/*touchscreen_spi {
-		compatible = "spi-gpio";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_touch>;
-		status = "okay";
-		num-chipselects = <1>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		gpio-sck = <&gpio3 15 0>;
-		gpio-mosi = <&gpio3 14 0>;
-		gpio-miso = <&gpio3 13 0>;
-		cs-gpios = <&gpio3 12 0>;
-
-		gpio_spi: ads7843@0 {
-			compatible = "ti,ads7843";
-			reg = <0>;
-			interrupt-parent = <&gpio3>;
-			interrupts = <11 2>;
-			vcc-supply = <&reg_3p3v>;
-			spi-max-frequency = <100000>;
-			pendown-gpio = <&gpio3 11 0>;
-			ti,penirq-recheck-delay-usecs = /bits/ 16 <5000>;
-			ti,vref-mv = <3300>;
-			ti,swap-xy;
-			ti,keep-vref-on;
-			ti,settle-delay-usec = /bits/ 16 <5000>;
-			ti,vref-delay-usecs = /bits/ 16 <0>;
-			ti,x-plate-ohms = /bits/ 16 <400>;
-			ti,y-plate-ohms = /bits/ 16 <400>;
-			ti,pressure-max = /bits/ 16 <15000>;
-			ti,debounce-rep = /bits/ 16 <2>;
-			ti,debounce-tol = /bits/ 16 <65535>;
-			ti,debounce-max = /bits/ 16 <0>;
-			ti,pendown-gpio-debounce = <100000>;
-			linux,wakeup;
-		};
-	};*/
 
 	usbeth: smsc95xx {
 		status = "okay";
@@ -333,6 +283,7 @@
 			>;
 		};
 
+#if 0
 		pinctrl_anamux: anamuxgrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_DA10__GPIO3_IO10		0x1b088 /* AN_SEL */
@@ -340,6 +291,7 @@
 				MX6QDL_PAD_EIM_A18__GPIO2_IO20		0x1b088 /* ADC_DAT */
 			>;
 		};
+#endif
 
 		pinctrl_misc: misc {
 			fsl,pins = <
