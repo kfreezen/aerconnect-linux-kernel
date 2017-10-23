@@ -185,10 +185,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_touch>;
 		
-		compatible = "ft5x06-ts";
+		compatible = "ft5x06_ts";
 		reg = <0x38>;
-		interrupts-extended = <&gpio2 25 IRQ_TYPE_EDGE_FALLING>;
-		wakeup-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <480>;
+		touchscreen-size-y = <800>;
+		
+		interrupt-parent = <&gpio2>;
+		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
 	};
 };
 

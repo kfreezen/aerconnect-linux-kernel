@@ -670,6 +670,7 @@ static struct i2c_driver ft5x06_ts_driver = {
 
 static int __init ft5x06_ts_init(void)
 {
+	printk(KERN_ALERT "Initializing FT5x06 driver.");
 	return i2c_add_driver(&ft5x06_ts_driver);
 }
 module_init(ft5x06_ts_init);
