@@ -3,6 +3,5 @@
 export ARCH=arm
 export CROSS_COMPILE=/opt/poky/2.0.2/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
 export LOADADDR=0x10008000
-make ts4900_defconfig
 
 make -j8 && make -j8 uImage

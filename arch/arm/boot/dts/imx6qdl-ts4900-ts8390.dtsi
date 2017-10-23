@@ -147,19 +147,17 @@
 		ssi-controller = <&ssi1>;
 	};
 
-	touchscreen_i2c: edt-ft5x06@38 {
-		compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
+	touchscreen_i2c: ft5x06_ts@38 {
+		compatible = "ft5x06-ts";
 		reg = <0x38>;
 		
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_touch>;
 		
 		status = "okay";
+		interrupts-extended = <&gpio2 20 IRQ_TYPE_EDGE_FALLING>;
 		
-		interrupt-parent = <&gpio2>;
-		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
-		
-		reset-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
+		wakeup-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
 	};
 
 	/*touchscreen_spi {
@@ -227,6 +225,23 @@
 	};
 };
 
+&i2c3 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c3>;
+	status = "okay";
+	
+	ft5x06_ts@38 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_touch>;
+		
+		compatible = "ft5x06-ts";
+		reg = <0x38>;
+		interrupts-extended = <&gpio2 25 IRQ_TYPE_EDGE_FALLING>;
+		wakeup-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
+	};
+};
+
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_misc>;
@@ -265,11 +280,16 @@
 			>;
 		};
 
-		pinctrl_touch: touchi2cgrp {
+		pinctrl_i2c3: i2c3grp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D17__I2C3_SCL	0x4001b8b1
 				MX6QDL_PAD_EIM_D18__I2C3_SDA	0x4001b8b1
-				MX6QDL_PAD_EIM_A18__GPIO2_IO20	0x4001b8b1 /* Interrupt */
+				MX6QDL_PAD_EIM_A18__GPIO2_IO20	0x1b0b0
+			>;
+		};
+		
+		pinctrl_touch: touchi2cgrp {
+			fsl,pins = <
 				MX6QDL_PAD_EIM_OE__GPIO2_IO25	0x4001b8b1 /* RESET */
 			>;
 		};
