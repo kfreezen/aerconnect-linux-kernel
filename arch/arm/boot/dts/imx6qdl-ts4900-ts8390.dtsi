@@ -182,17 +182,29 @@
 	status = "okay";
 	
 	ft5x06_ts@38 {
-		pinctrl-names = "default";
+		pinctrl-names = "pmx_ts_active", "pmx_ts_suspend", "pmx_ts_release";
 		pinctrl-0 = <&pinctrl_touch>;
+		pinctrl-1 = <&pinctrl_touch>;
+		pinctrl-2 = <&pinctrl_touch>;
 		
-		compatible = "ft5x06_ts";
+		compatible = "focaltech,5x06", "ft5x06_ts";
 		reg = <0x38>;
-		touchscreen-size-x = <480>;
-		touchscreen-size-y = <800>;
+		focaltech,panel-coords = <0 0 480 800>;
+		focaltech,display-coords = <0 0 480 800>;
+		focaltech,reset-gpio = <&gpio2 25 GPIO_ACTIVE_LOW>;
+		focaltech,irq-gpio = <&gpio2 20 IRQ_TYPE_EDGE_FALLING>;
+		focaltech,group-id = <1000>; // no clue what this one's supposed to be either
+		focaltech,hard-reset-delay-ms = <750>; // don't know what this is for yet.
+		focaltech,soft-reset-delay-ms = <250>; // or this.
+		focaltech,num-max-touches = <4>; // I think the max for this one is 5.
+		
+		// I'm thinking this one's optional -> links to pdata->info.delay_aa
+		focaltech,fw-delay-aa-ms = <5>; // No clue what the default for this one should be, or what this does.
+		focaltech,fw-delay-55-ms = <5>; // same here.
+		focaltech,family-id = <0x00000055>;
 		
 		interrupt-parent = <&gpio2>;
-		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-		reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
+		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
 	};
 };
 
@@ -238,12 +250,12 @@
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D17__I2C3_SCL	0x4001b8b1
 				MX6QDL_PAD_EIM_D18__I2C3_SDA	0x4001b8b1
-				MX6QDL_PAD_EIM_A18__GPIO2_IO20	0x1b0b0
 			>;
 		};
 		
 		pinctrl_touch: touchi2cgrp {
 			fsl,pins = <
+				MX6QDL_PAD_EIM_A18__GPIO2_IO20	0x1b0b0
 				MX6QDL_PAD_EIM_OE__GPIO2_IO25	0x4001b8b1 /* RESET */
 			>;
 		};

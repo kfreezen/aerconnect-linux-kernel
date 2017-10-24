@@ -3,6 +3,6 @@
 ssh aercon@$1 "mkdir ~/kernel-boot; mkdir ~/kernel-deploy"
 
 cd ~/kernel-staging
-scp boot/uImage boot/*.dtb aercon@$1:~/kernel-boot
+scp boot/uImage boot/imx6*-ts4900-*.dtb aercon@$1:~/kernel-boot
 scp ~/kernel-staging/deploy-image aercon@$1:~/kernel-deploy
 #scp -r ~/kernel-staging/lib aercon@$1:~/kernel-deploy/
