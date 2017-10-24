@@ -409,7 +409,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 	struct clk *codec_clk;
 	u32 width;
 	int ret;
-
+printk(KERN_WARNING "fsl_asoc_card_probe\n");
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

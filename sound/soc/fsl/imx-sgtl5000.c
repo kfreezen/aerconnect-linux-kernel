@@ -64,7 +64,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
 	struct imx_sgtl5000_data *data = NULL;
 	int int_port, ext_port;
 	int ret;
-
+	printk(KERN_WARNING "imx_sgtl5000_probe\n");
 	ret = of_property_read_u32(np, "mux-int-port", &int_port);
 	if (ret) {
 		dev_err(&pdev->dev, "mux-int-port missing or invalid\n");

@@ -52,3 +52,13 @@
 	status = "okay";
 };
 
+&usbotg {
+    vbus-supply = <&reg_usb_otg_vbus>;
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_usbotg>;
+    disable-over-current;
+    dr_mode = "host";
+    status = "okay";
+};
+
+

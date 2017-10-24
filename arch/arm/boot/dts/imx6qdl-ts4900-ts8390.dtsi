@@ -134,15 +134,24 @@
 			enable-active-high;
 			startup-delay-us = <60000>;
 		};
+
+		reg_1p8v: 1p8v {
+			compatible = "regulator-fixed";
+			regulator-name = "1P8V";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-always-on;
+		};
 	};
 
 	sound {
+	compatible = "fsl,imx-audio-sgtl5000";
 		audio-codec = <&sgtl5000>;
 		audio-routing =
 			"MIC_IN", "Mic Jack",
+            "LINE_IN", "Line In Jack",
 			"Mic Jack", "Mic Bias",
-			"Headphone Jack", "HP_OUT";
-		compatible = "fsl,imx-audio-sgtl5000";
+			"Line Out Jack", "LINE_OUT";
 		model = "On-board Codec";
 		mux-ext-port = <3>;
 		mux-int-port = <1>;
@@ -172,6 +181,8 @@
 		clocks = <&clks 201>;
 		VDDA-supply = <&reg_3p3v>;
 		VDDIO-supply = <&reg_3p3v>;
+		VDDD-supply = <&reg_1p8v>;
+		VDDD-external = <0x01>;
 	};
 };
 
@@ -337,6 +348,5 @@
 };
 
 &ssi1 {
-	fsl,mode = "i2s-slave";
 	status = "okay";
 };
