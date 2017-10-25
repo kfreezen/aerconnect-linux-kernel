@@ -33,7 +33,9 @@
 		i2c2 = &i2c3;
 		ipu0 = &ipu1;
 		mmc0 = &usdhc1;
+#ifndef USESPI5
 		mmc1 = &usdhc2;
+#endif
 		mmc2 = &usdhc3;
 		mmc3 = &usdhc4;
 		serial0 = &uart1;
@@ -322,7 +324,21 @@
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
-
+#ifdef USESPI5
+				ecspi5: ecspi@02018000 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					compatible = "fsl,imx6q-ecspi", "fsl,imx51-ecspi";
+					reg = <0x02018000 0x4000>;
+					interrupts = <0 35 IRQ_TYPE_LEVEL_HIGH>;
+					clocks = <&clks IMX6Q_CLK_ECSPI5>,
+						 <&clks IMX6Q_CLK_ECSPI5>;
+					clock-names = "ipg", "per";
+					dmas = <&sdma 11 7 1>, <&sdma 12 7 2>;
+					dma-names = "rx", "tx";
+					status = "disabled";
+				};
+#endif
 				uart1: serial@02020000 {
 					compatible = "fsl,imx6q-uart", "fsl,imx21-uart";
 					reg = <0x02020000 0x4000>;
@@ -353,15 +369,15 @@
 
 				ssi1: ssi@02028000 {
 					#sound-dai-cells = <0>;
-					compatible = "fsl,imx6q-ssi",
-							"fsl,imx51-ssi";
+					compatible = "fsl,imx6q-ssi","fsl,imx51-ssi";
 					reg = <0x02028000 0x4000>;
 					interrupts = <0 46 IRQ_TYPE_LEVEL_HIGH>;
-					clocks = <&clks IMX6QDL_CLK_SSI1_IPG>,
-						 <&clks IMX6QDL_CLK_SSI1>;
+                    /*interrupts = <0 46 0x04>;*/
+					clocks = <&clks IMX6QDL_CLK_SSI1_IPG>,<&clks IMX6QDL_CLK_SSI1>;
+                    /*clocks = <&clks 178>, <&clks 157>;*/
 					clock-names = "ipg", "baud";
-					dmas = <&sdma 37 22 0>,
-					       <&sdma 38 22 0>;
+					dmas = <&sdma 37 22 0>,<&sdma 38 22 0>;
+                    /*dmas = <&sdma 37 1 0>,<&sdma 38 1 0>;*/
 					dma-names = "rx", "tx";
 					fsl,fifo-depth = <15>;
 					status = "disabled";
@@ -1059,7 +1075,7 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
+#ifndef USESPI5
 			usdhc2: usdhc@02194000 {
 				compatible = "fsl,imx6q-usdhc";
 				reg = <0x02194000 0x4000>;
@@ -1071,7 +1087,7 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
+#endif
 			usdhc3: usdhc@02198000 {
 				compatible = "fsl,imx6q-usdhc";
 				reg = <0x02198000 0x4000>;

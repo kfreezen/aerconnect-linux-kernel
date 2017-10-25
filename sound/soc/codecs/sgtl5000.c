@@ -32,6 +32,7 @@
 
 #include "sgtl5000.h"
 
+#define SGTL5000_MAX_REG_1600
 #define SGTL5000_DAP_REG_OFFSET	0x0100
 #define SGTL5000_MAX_REG_OFFSET	0x013A
 
@@ -1143,43 +1144,47 @@ static int sgtl5000_set_power_regs(struct snd_soc_codec *codec)
 			SGTL5000_REFTOP_POWERUP;
 	lreg_ctrl = snd_soc_read(codec, SGTL5000_CHIP_LINREG_CTRL);
 
-	if (vddio < 3100 && vdda < 3100) {
+if (vddio < 3100 && vdda < 3100) {
 		/* enable internal oscillator used for charge pump */
 		snd_soc_update_bits(codec, SGTL5000_CHIP_CLK_TOP_CTRL,
 					SGTL5000_INT_OSC_EN,
 					SGTL5000_INT_OSC_EN);
 		/* Enable VDDC charge pump */
 		ana_pwr |= SGTL5000_VDDC_CHRGPMP_POWERUP;
+		dev_info(codec->dev, "Charge pump enabled\n");
 	} else if (vddio >= 3100 && vdda >= 3100) {
-		ana_pwr &= ~SGTL5000_VDDC_CHRGPMP_POWERUP;
+		/*
+		 * if vddio and vddd > 3.1v,
+		 * charge pump should be clean before set ana_pwr
+		 */
+		snd_soc_update_bits(codec, SGTL5000_CHIP_ANA_POWER,
+				SGTL5000_VDDC_CHRGPMP_POWERUP, 0);
+
 		/* VDDC use VDDIO rail */
 		lreg_ctrl |= SGTL5000_VDDC_ASSN_OVRD;
 		lreg_ctrl |= SGTL5000_VDDC_MAN_ASSN_VDDIO <<
 			    SGTL5000_VDDC_MAN_ASSN_SHIFT;
+		dev_info(codec->dev, "Charge disabled\n");
 	}
-
+	dev_info(codec->dev, "vdda=%i  vddio=%i  vddd=%i\n", vdda, vddio, vddd);
 	snd_soc_write(codec, SGTL5000_CHIP_LINREG_CTRL, lreg_ctrl);
 
 	snd_soc_write(codec, SGTL5000_CHIP_ANA_POWER, ana_pwr);
 
 	/* set voltage to register */
-	snd_soc_update_bits(codec, SGTL5000_CHIP_LINREG_CTRL,
-				SGTL5000_LINREG_VDDD_MASK, 0x8);
-
+#ifndef SGTL5000_MAX_REG_1600
+	snd_soc_update_bits(codec, SGTL5000_CHIP_LINREG_CTRL, SGTL5000_LINREG_VDDD_MASK, 0x8);
+#endif
 	/*
 	 * if vddd linear reg has been enabled,
 	 * simple digital supply should be clear to get
 	 * proper VDDD voltage.
 	 */
-	if (ana_pwr & SGTL5000_LINEREG_D_POWERUP)
-		snd_soc_update_bits(codec, SGTL5000_CHIP_ANA_POWER,
-				SGTL5000_LINREG_SIMPLE_POWERUP,
-				0);
-	else
-		snd_soc_update_bits(codec, SGTL5000_CHIP_ANA_POWER,
-				SGTL5000_LINREG_SIMPLE_POWERUP |
-				SGTL5000_STARTUP_POWERUP,
-				0);
+	if (ana_pwr & SGTL5000_LINEREG_D_POWERUP){
+		snd_soc_update_bits(codec, SGTL5000_CHIP_ANA_POWER,	SGTL5000_LINREG_SIMPLE_POWERUP,	0);}
+	else {
+		snd_soc_update_bits(codec, SGTL5000_CHIP_ANA_POWER, SGTL5000_LINREG_SIMPLE_POWERUP | SGTL5000_STARTUP_POWERUP, 0);
+	}
 
 	/*
 	 * set ADC/DAC VAG to vdda / 2,
@@ -1215,6 +1220,9 @@ static int sgtl5000_set_power_regs(struct snd_soc_codec *codec)
 			SGTL5000_LINE_OUT_CURRENT_360u <<
 				SGTL5000_LINE_OUT_CURRENT_SHIFT);
 
+	ana_pwr = snd_soc_read(codec, SGTL5000_CHIP_ANA_POWER);
+	dev_info(codec->dev, "SGTL5000_CHIP_ANA_POWER %x\n", ana_pwr);
+
 	return 0;
 }
 
@@ -1237,56 +1245,86 @@ static int sgtl5000_replace_vddd_with_ldo(struct snd_soc_codec *codec)
 	return 0;
 }
 
-static int sgtl5000_enable_regulators(struct snd_soc_codec *codec)
-{
+static int sgtl5000_enable_regulators(struct snd_soc_codec *codec) {
+	int reg;
 	int ret;
+	int rev;
 	int i;
+	const u32 *property;
 	int external_vddd = 0;
+	int use_ext_vdd = 0;
 	struct sgtl5000_priv *sgtl5000 = snd_soc_codec_get_drvdata(codec);
-	struct regulator *vddd;
 
 	for (i = 0; i < ARRAY_SIZE(sgtl5000->supplies); i++)
 		sgtl5000->supplies[i].supply = supply_names[i];
 
-	/* External VDDD only works before revision 0x11 */
-	if (sgtl5000->revision < 0x11) {
-		vddd = regulator_get_optional(codec->dev, "VDDD");
-		if (IS_ERR(vddd)) {
-			/* See if it's just not registered yet */
-			if (PTR_ERR(vddd) == -EPROBE_DEFER)
-				return -EPROBE_DEFER;
-		} else {
-			external_vddd = 1;
-			regulator_put(vddd);
-		}
-	}
-
-	if (!external_vddd) {
+	property = of_get_property(codec->dev->of_node, "VDDD-external", NULL);
+	if(property != NULL){
+		dev_info(codec->dev, "VDDD-external check\n");
+		use_ext_vdd = 1;
+	}	
+	
+	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(sgtl5000->supplies), sgtl5000->supplies);
+	if (!ret) {
+		external_vddd = 1;
+	} else {
 		ret = sgtl5000_replace_vddd_with_ldo(codec);
 		if (ret)
 			return ret;
 	}
 
-	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(sgtl5000->supplies),
-				 sgtl5000->supplies);
-	if (ret)
-		goto err_ldo_remove;
-
 	ret = regulator_bulk_enable(ARRAY_SIZE(sgtl5000->supplies),
-					sgtl5000->supplies);
+			  sgtl5000->supplies);
 	if (ret)
 		goto err_regulator_free;
 
 	/* wait for all power rails bring up */
 	udelay(10);
 
+	/*
+	 * workaround for revision 0x11 and later,
+	 * roll back to use internal LDO
+	 */
+	
+	//		VDDIO-supply = <&reg_3p3v>;
+	//VDDD-external = <1>;
+
+	ret = regmap_read(sgtl5000->regmap, SGTL5000_CHIP_ID, &reg);
+	if (ret)
+		goto err_regulator_disable;
+
+	rev = (reg & SGTL5000_REVID_MASK) >> SGTL5000_REVID_SHIFT;
+
+	if (external_vddd && rev >= 0x11 && !use_ext_vdd) {
+		/* disable all regulator first */
+		regulator_bulk_disable(ARRAY_SIZE(sgtl5000->supplies),
+				  sgtl5000->supplies);
+		/* free VDDD regulator */
+		regulator_bulk_free(ARRAY_SIZE(sgtl5000->supplies),
+				  sgtl5000->supplies);
+
+		ret = sgtl5000_replace_vddd_with_ldo(codec);
+		if (ret)
+			return ret;
+
+		ret = regulator_bulk_enable(ARRAY_SIZE(sgtl5000->supplies),
+				  sgtl5000->supplies);
+		if (ret)
+			goto err_regulator_free;
+
+		/* wait for all power rails bring up */
+		udelay(10);
+	}
+
 	return 0;
 
+err_regulator_disable:
+	regulator_bulk_disable(ARRAY_SIZE(sgtl5000->supplies),
+			  sgtl5000->supplies);
 err_regulator_free:
 	regulator_bulk_free(ARRAY_SIZE(sgtl5000->supplies),
-				sgtl5000->supplies);
-err_ldo_remove:
-	if (!external_vddd)
+			  sgtl5000->supplies);
+	if (external_vddd)
 		ldo_regulator_remove(codec);
 	return ret;
 
@@ -1492,15 +1530,19 @@ static int sgtl5000_i2c_probe(struct i2c_client *client,
 			switch (value) {
 			case SGTL5000_MICBIAS_OFF:
 				sgtl5000->micbias_resistor = 0;
+				dev_info(&client->dev, "SGTL5000_MICBIAS_OFF\n");
 				break;
 			case SGTL5000_MICBIAS_2K:
 				sgtl5000->micbias_resistor = 1;
+				dev_info(&client->dev, "SGTL5000_MICBIAS_2K\n");
 				break;
 			case SGTL5000_MICBIAS_4K:
 				sgtl5000->micbias_resistor = 2;
+				dev_info(&client->dev, "SGTL5000_MICBIAS_4K\n");
 				break;
 			case SGTL5000_MICBIAS_8K:
 				sgtl5000->micbias_resistor = 3;
+				dev_info(&client->dev, "SGTL5000_MICBIAS_8K\n");
 				break;
 			default:
 				sgtl5000->micbias_resistor = 2;

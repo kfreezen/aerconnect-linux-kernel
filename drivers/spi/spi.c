@@ -313,9 +313,12 @@ int spi_add_device(struct spi_device *spi)
 
 	status = bus_for_each_dev(&spi_bus_type, NULL, spi, spi_dev_check);
 	if (status) {
-		dev_err(dev, "chipselect %d already in use\n",
-				spi->chip_select);
+		dev_err(dev, "chipselect %d already in use : %s\n",
+				spi->chip_select, dev_name(&spi->dev));
 		goto done;
+	} else {
+		dev_info(dev, "using chipselect %d on child %s\n",
+				spi->chip_select, dev_name(&spi->dev));
 	}
 
 	if (master->cs_gpios)

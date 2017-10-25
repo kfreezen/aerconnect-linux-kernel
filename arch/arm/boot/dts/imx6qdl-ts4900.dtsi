@@ -155,6 +155,7 @@
 	};
 };*/
 
+#ifndef AERCONNECT
 &ecspi2 {
 	fsl,spi-num-chipselects = <1>;
 	cs-gpios = <&gpio6 2 0>;
@@ -173,7 +174,7 @@
 		poll-time = <100>;
 	};
 };
-
+#endif
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -354,7 +355,7 @@
 				MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x17059 /* WIFI IRQ */
 			>;
 		};
-
+#ifndef USESPI5
 		pinctrl_usdhc2: usdhc2grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD2_CMD__SD2_CMD		0x17059
@@ -366,7 +367,7 @@
 				MX6QDL_PAD_EIM_EB0__GPIO2_IO28 		0x1b0b1 /* EN_SD_POWER# */
 			>;
 		};
-
+#endif
 		pinctrl_usdhc3: usdhc3grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD3_CMD__SD3_CMD		0x17059
@@ -538,6 +539,8 @@
 	};
 };
 
+#ifndef USESPI5
+
 &usdhc2 { /* SD */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
@@ -546,6 +549,9 @@
 	status = "okay";
 	fsl,wp-controller;
 };
+#else
+
+#endif
 
 &usdhc3 { /* eMMC */
 	pinctrl-names = "default";

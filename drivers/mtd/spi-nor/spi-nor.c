@@ -56,6 +56,7 @@ struct flash_info {
 #define	SPI_NOR_QUAD_READ	0x40    /* Flash supports Quad Read */
 #define	USE_FSR			0x80	/* use flag status register */
 #define	SPI_NOR_DDR_QUAD_READ	0x100   /* Flash supports DDR Quad Read */
+#define SST_GLOBAL_WREN		0x200
 };
 
 #define JEDEC_MFR(info)	((info)->id[0])
@@ -166,6 +167,14 @@ static inline int write_sr(struct spi_nor *nor, u8 val)
  */
 static inline int write_enable(struct spi_nor *nor)
 {
+	if (nor->flags & FLAGS_NEED_GLOBAL_WREN) {
+		int val1 = nor->write_reg(nor, SPINOR_OP_GLOBAL_WREN, NULL, 0, 0);
+		if (!val1) {
+			return nor->write_reg(nor, SPINOR_OP_WREN, NULL, 0, 0);
+		} else {
+			return val1;
+		}
+	}
 	return nor->write_reg(nor, SPINOR_OP_WREN, NULL, 0, 0);
 }
 
@@ -637,6 +646,7 @@ static const struct spi_device_id spi_nor_ids[] = {
 	{ "sst25vf016b", INFO(0xbf2541, 0, 64 * 1024, 32, SECT_4K | SST_WRITE) },
 	{ "sst25vf032b", INFO(0xbf254a, 0, 64 * 1024, 64, SECT_4K | SST_WRITE) },
 	{ "sst25vf064c", INFO(0xbf254b, 0, 64 * 1024, 128, SECT_4K) },
+	{ "sst26vf064b", INFO(0xbf2643, 0, 64 * 1024, 128, SECT_4K | SST_GLOBAL_WREN) },
 	{ "sst25wf512",  INFO(0xbf2501, 0, 64 * 1024,  1, SECT_4K | SST_WRITE) },
 	{ "sst25wf010",  INFO(0xbf2502, 0, 64 * 1024,  2, SECT_4K | SST_WRITE) },
 	{ "sst25wf020",  INFO(0xbf2503, 0, 64 * 1024,  4, SECT_4K | SST_WRITE) },
@@ -1143,6 +1153,8 @@ int spi_nor_scan(struct spi_nor *nor, const char *name, enum read_mode mode)
 
 	if (info->flags & SPI_NOR_NO_ERASE)
 		mtd->flags |= MTD_NO_ERASE;
+	if (info->flags & SST_GLOBAL_WREN)
+		nor->flags |= FLAGS_NEED_GLOBAL_WREN; 
 
 	mtd->dev.parent = dev;
 	nor->page_size = info->page_size;

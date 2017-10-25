@@ -38,7 +38,7 @@
 #define SPINOR_OP_RDID		0x9f	/* Read JEDEC ID */
 #define SPINOR_OP_RDCR		0x35	/* Read configuration register */
 #define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
-
+#define	SPINOR_OP_GLOBAL_WREN	0x98
 /* 4-byte address opcodes - used on Spansion and some Macronix flashes. */
 #define SPINOR_OP_READ4		0x13	/* Read data bytes (low frequency) */
 #define SPINOR_OP_READ4_FAST	0x0c	/* Read data bytes (high frequency) */
@@ -83,6 +83,8 @@
 
 /* Configuration Register bits. */
 #define CR_QUAD_EN_SPAN		0x2	/* Spansion Quad I/O */
+
+#define FLAGS_NEED_GLOBAL_WREN 0x01
 
 enum read_mode {
 	SPI_NOR_NORMAL = 0,

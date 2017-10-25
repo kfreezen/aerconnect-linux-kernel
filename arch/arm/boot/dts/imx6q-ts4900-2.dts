@@ -40,9 +40,10 @@
  */
 
 /dts-v1/;
+#define USESPI5 1
+#define AERCONNECT 1
 #include "imx6q.dtsi"
 #include "imx6qdl-ts4900-ts8390.dtsi"
-
 / {
 	model = "Technologic Systems i.MX6 Quad TS-4900 (TS-TPC-8390)";
 	compatible = "fsl,imx6q-ts4900", "fsl,imx6q";

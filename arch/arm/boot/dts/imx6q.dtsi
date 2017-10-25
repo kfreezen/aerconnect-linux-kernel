@@ -138,6 +138,7 @@
 		};
 
 		aips-bus@02000000 { /* AIPS1 */
+#ifndef USESPI5
 			spba-bus@02000000 {
 				ecspi5: ecspi@02018000 {
 					#address-cells = <1>;
@@ -153,7 +154,7 @@
 					status = "disabled";
 				};
 			};
-
+#endif
 			iomuxc: iomuxc@020e0000 {
 				compatible = "fsl,imx6q-iomuxc";
 
