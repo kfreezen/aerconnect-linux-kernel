@@ -521,7 +521,7 @@ static int sgtl5000_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	}
 
 	snd_soc_write(codec, SGTL5000_CHIP_I2S_CTRL, i2sctl);
-
+	dev_info(codec->dev, "SGTL5000_CHIP_I2S_CTRL=0x%X\n", i2sctl);
 	return 0;
 }
 

@@ -113,7 +113,7 @@
 		};
 	};
 };
-
+#ifndef AERCONNECT
 &can1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
@@ -125,7 +125,7 @@
 	pinctrl-0 = <&pinctrl_flexcan2>;
 	status = "okay";
 };
-
+#endif
 /*&ecspi1 {
 	fsl,spi-num-chipselects = <1>;
 	cs-gpios = <&gpio3 19 0>;
@@ -265,14 +265,14 @@
 				MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX	0x1b0b1
 			>;
 		};
-
+#ifndef AERCONNECT
 		pinctrl_flexcan2: flexcan2grp {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX	0x1b0b1
 				MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX	0x1b0b1
 			>;
 		};
-
+#endif
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D21__I2C1_SCL		0x4001b8b1
@@ -330,14 +330,14 @@
 				MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA	0x1b0b1
 			>;
 		};
-
+#ifndef AERCONNECT
 		pinctrl_uart5: uart5-grp {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL1__UART5_TX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA	0x1b0b1
 			>;
 		};
-
+#endif
 		pinctrl_usbotg: usbotggrp {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
@@ -500,13 +500,13 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
 };
-
+#ifndef AERCONNECT
 &uart5 {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5>;
 };
-
+#endif
 &usbh1 {
 	status = "okay";
 };

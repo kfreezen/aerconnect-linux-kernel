@@ -49,20 +49,20 @@
 		mxcfb0 = &mxcfb0;
 		/*i2c3 = &adc_i2c;*/
 	};
-
-#if 0
-	adc_i2c: adc-i2c {
+#ifdef NoHwClock /*We don't really need this because the ts4900 has one*/
+	adc-i2c {
 		compatible = "i2c-gpio";
-		status = "okay";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_anamux>;
-		gpios = <&gpio2 20 0>, /* sda */
+		gpios = <&gpio2 17 0>, /* sda */
 				<&gpio6 31 0>; /* scl */
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		m41t00s@68 {
+			compatible = "st,m41t00";
+			reg = <0x68>;
+		};
 	};
 #endif
-
 	backlight_lcd {
 		compatible = "pwm-backlight";
 		pwms = <&pwm3 0 5000000>;
@@ -107,6 +107,36 @@
 			default-state = "on";
 		};
 
+        modem-reset {
+            label = "modem-reset";
+            gpios = <&gpio3 0 0>;
+            default-state = "on";
+        };
+
+        modem-dtr {
+            label = "modem-dtr";
+            gpios = <&gpio3 3 0>;
+            default-state = "off";
+        };
+
+        modem-rts {
+            label = "modem-rts";
+            gpios = <&gpio4 15 0>;
+            default-state = "off";
+        };
+
+        xtend-shdn {
+            label = "xtend-shdn";
+            gpios = <&gpio3 5 0>;
+            default-state = "on";
+        };
+
+        xtend-config {
+            label = "xtend-config";
+            gpios = <&gpio3 6 0>;
+            default-state = "off";
+        };
+
 	};
 
 	mxcfb0: fb@0 {
@@ -145,7 +175,7 @@
 	};
 
 	sound {
-	compatible = "fsl,imx-audio-sgtl5000";
+	    compatible = "fsl,imx-audio-sgtl5000";
 		audio-codec = <&sgtl5000>;
 		audio-routing =
 			"MIC_IN", "Mic Jack",
@@ -197,7 +227,7 @@
 	pinctrl-0 = <&pinctrl_ecspi5_4900>;
 	status = "okay";
 	sstflash: sst26vf064b@0 {
-		compatible = "sst,sst26vf064b", "jedec,spi-nor";
+		compatible = "jedec,spi-nor";
 		spi-max-frequency = <25000000>;
 		reg = <0>;
 		#address-cells = <1>;
@@ -207,17 +237,30 @@
 			reg = <0x0 0x800000>;
 		};			
 	};
+#if 1
 	eeprom: m24lc256@1 {
 		compatible = "spidev";
 		spi-max-frequency = <10000000>;
 		reg = <1>;
 	};
+#else
+	eeprom: m24lc256@1 {
+		compatible = "at,at25";
+		reg = <1>;
+		spi-max-frequency = <8000000>;
+		address-width = <16>;	
+		pagesize = <64>;
+		size = <32768>;
+	};
+#endif
 
 };
 #endif
 
 &audmux {
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sgtl5000>;
 };
 
 &i2c2 {
@@ -228,12 +271,8 @@
 
 	sgtl5000: sgtl5000@0a {
 		compatible = "fsl,sgtl5000";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_sgtl5000>;
 		reg = <0x0a>;
 		clocks = <&clks 201>;
-		micbias-resistor-k-ohms = <4>;
-		micbias-voltage-m-volts = <2250>;
 		VDDA-supply = <&reg_3p3v>;
 		VDDIO-supply = <&reg_3p3v>;
 		VDDD-supply = <&reg_1p8v>;
@@ -272,6 +311,14 @@
 		interrupt-parent = <&gpio2>;
 		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
 	};
+};
+
+&uart5 {
+    status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5>;
+    //fsl,uart-has-rtscts;
+    fsl,dte-mode;
 };
 
 &iomuxc {
@@ -388,7 +435,18 @@
 			>;
 		};
 #endif
-
+#ifdef AERCONNECT
+		pinctrl_uart5: uart5-group {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_ROW1__UART5_TX_DATA	0x1b088
+				MX6QDL_PAD_KEY_COL1__UART5_RX_DATA	0x1b088
+                //MX6QDL_PAD_KEY_ROW4__UART5_RTS_B    0x1b088
+                //MX6QDL_PAD_KEY_COL4__UART5_CTS_B    0x1b088
+                MX6QDL_PAD_KEY_ROW4__GPIO4_IO15     0x1b088
+                MX6QDL_PAD_KEY_COL4__GPIO4_IO14     0x1b088
+			>;
+		};
+#endif
 		pinctrl_misc: misc {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_A16__GPIO2_IO22		0x1b088 /* EN_USB_5V# */
@@ -417,6 +475,8 @@
 
 				MX6QDL_PAD_GPIO_5__GPIO1_IO05		0x1b088 /* DIO_20/IN_6 */
 				MX6QDL_PAD_GPIO_9__GPIO1_IO09		0x1b088 /* DIO_43/IN_9 */
+                MX6QDL_PAD_EIM_DA3__GPIO3_IO03      0x1b088
+
 			>;
 		};
 	};
@@ -433,5 +493,6 @@
 };
 
 &ssi1 {
+    fsl,mode = "i2s-slave";
 	status = "okay";
 };

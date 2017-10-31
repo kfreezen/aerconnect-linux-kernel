@@ -19,7 +19,9 @@
 / {
 	aliases {
 		ethernet0 = &fec;
+#ifndef AERCONNECT
 		can0 = &can1;
+#endif
 		can1 = &can2;
 		gpio0 = &gpio1;
 		gpio1 = &gpio2;
@@ -523,7 +525,7 @@
 				clock-names = "ipg", "per";
 				status = "disabled";
 			};
-
+#ifndef AERCONNECT
 			can1: flexcan@02090000 {
 				compatible = "fsl,imx6q-flexcan";
 				reg = <0x02090000 0x4000>;
@@ -534,7 +536,7 @@
 				stop-mode = <&gpr 0x34 28 0x10 17>;
 				status = "disabled";
 			};
-
+#endif
 			can2: flexcan@02094000 {
 				compatible = "fsl,imx6q-flexcan";
 				reg = <0x02094000 0x4000>;

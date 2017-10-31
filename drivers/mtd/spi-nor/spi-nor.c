@@ -258,9 +258,9 @@ static int spi_nor_wait_till_ready(struct spi_nor *nor)
 {
 	unsigned long deadline;
 	int timeout = 0, ret;
-
+	int sr;
 	deadline = jiffies + MAX_READY_WAIT_JIFFIES;
-
+/* EF something in this section doesn't make the sst memory chip happy, so I copied the 3.X version back in.
 	while (!timeout) {
 		if (time_after_eq(jiffies, deadline))
 			timeout = 1;
@@ -272,7 +272,16 @@ static int spi_nor_wait_till_ready(struct spi_nor *nor)
 			return 0;
 
 		cond_resched();
-	}
+	}*/
+		do {
+		cond_resched();
+
+		sr = read_sr(nor);
+		if (sr < 0)
+			break;
+		else if (!(sr & SR_WIP))
+			return 0;
+	} while (!time_after_eq(jiffies, deadline));
 
 	dev_err(nor->dev, "flash operation timed out\n");
 
@@ -286,7 +295,14 @@ static int spi_nor_wait_till_ready(struct spi_nor *nor)
  */
 static int erase_chip(struct spi_nor *nor)
 {
+	int ret;
 	dev_dbg(nor->dev, " %lldKiB\n", (long long)(nor->mtd->size >> 10));
+	ret = spi_nor_wait_till_ready(nor);
+	if (ret)
+		return ret;
+
+	/* Send write enable, then erase commands. */
+	write_enable(nor);
 
 	return nor->write_reg(nor, SPINOR_OP_CHIP_ERASE, NULL, 0, 0);
 }
@@ -1263,8 +1279,8 @@ int spi_nor_scan(struct spi_nor *nor, const char *name, enum read_mode mode)
 
 	nor->read_dummy = spi_nor_read_dummy_cycles(nor);
 
-	dev_info(dev, "%s (%lld Kbytes)\n", id->name,
-			(long long)mtd->size >> 10);
+	dev_info(dev, "%s (%lld Kbytes) Jedec id 0x%X%X%X%X\n", id->name,
+			  (long long) mtd->size >> 10, info->id[0],info->id[1],info->id[2],info->id[3]);
 
 	dev_dbg(dev,
 		"mtd .name = %s, .size = 0x%llx (%lldMiB), "
