@@ -234,7 +234,7 @@ static int wlcore_probe_of(struct device *dev, int *irq,
 			   struct wlcore_platdev_data *pdev_data)
 {
 	struct device_node *np = dev->of_node;
-
+	dev_info(dev, "wlcore_probe_of\n");
 	if (!np || !of_match_node(wlcore_sdio_of_match_table, np))
 		return -ENODATA;
 
@@ -250,7 +250,7 @@ static int wlcore_probe_of(struct device *dev, int *irq,
 			     &pdev_data->ref_clock_freq);
 	of_property_read_u32(np, "tcxo-clock-frequency",
 			     &pdev_data->tcxo_clock_freq);
-
+	dev_info(dev, "wlcore_probe_of success\n");
 	return 0;
 }
 #else
@@ -271,7 +271,7 @@ static int wl1271_probe(struct sdio_func *func,
 	int ret = -ENOMEM;
 	int irq;
 	const char *chip_family;
-
+	dev_info(&func->dev, "wl1271_probe\n");
 	/* We are only able to handle the wlan function */
 	if (func->num != 0x02)
 		return -ENODEV;
@@ -353,6 +353,7 @@ static int wl1271_probe(struct sdio_func *func,
 		dev_err(glue->dev, "can't add platform device\n");
 		goto out_dev_put;
 	}
+	dev_info(glue->dev, "wl1271_probe sucess\n");
 	return 0;
 
 out_dev_put:

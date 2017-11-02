@@ -161,7 +161,7 @@
         };
 
         power-red {
-            label = "status-grn";
+            label = "power-red";
             gpios = <&gpio3 9 1>;
             default-state = "off";
         };
@@ -240,9 +240,9 @@
 		crystal = <1>;
 		poll-time = <100>;
 	};
-	spidev: spi@1 {
-		compatible = "spidev";
-		spi-max-frequency = <10000000>;
+	spidev: mcp3208@1 {
+		compatible = "microchip,mcp3208";
+		spi-max-frequency = <2000000>;
 		reg = <1>;
 	};
 };
@@ -321,7 +321,8 @@
 		pinctrl-1 = <&pinctrl_touch>;
 		pinctrl-2 = <&pinctrl_touch>;
 		
-		compatible = "focaltech,5x06", "ft5x06_ts";
+		//compatible = "focaltech,5x06", "ft5x06_ts";
+        compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
 		reg = <0x38>;
 		focaltech,panel-coords = <0 0 480 800>;
 		focaltech,display-coords = <0 0 480 800>;
@@ -336,7 +337,8 @@
 		focaltech,fw-delay-aa-ms = <5>; // No clue what the default for this one should be, or what this does.
 		focaltech,fw-delay-55-ms = <5>; // same here.
 		focaltech,family-id = <0x00000055>;
-		
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <480>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
 	};
