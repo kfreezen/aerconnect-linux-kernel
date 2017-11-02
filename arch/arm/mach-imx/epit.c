@@ -197,7 +197,7 @@ void __init epit_timer_init(void __iomem *base, int irq)
 {
 	struct clk *timer_clk;
 
-	timer_clk = clk_get_sys("imx-epit.0", NULL);
+	timer_clk = clk_get_sys("imx-epit.0", "ipg");
 	if (IS_ERR(timer_clk)) {
 		pr_err("i.MX epit: unable to get clk\n");
 		return;

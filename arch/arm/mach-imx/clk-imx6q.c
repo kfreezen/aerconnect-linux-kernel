@@ -107,6 +107,7 @@ static unsigned int const clks_init_on[] __initconst = {
 	IMX6QDL_CLK_ARM,
 	IMX6QDL_CLK_OCRAM,
 	IMX6QDL_CLK_AXI,
+	IMX6QDL_CLK_EPIT1,
 };
 
 static struct clk_div_table clk_enet_ref_table[] = {
@@ -680,6 +681,8 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 	else
 		clk[IMX6Q_CLK_ECSPI5] = imx_clk_gate2("ecspi5",        "ecspi_root",        base + 0x6c, 8);
 	clk[IMX6QDL_CLK_ENET]         = imx_clk_gate2("enet",          "ipg",               base + 0x6c, 10);
+	clk[IMX6QDL_CLK_EPIT1]         = imx_clk_gate2("epit1",          "ipg",             base + 0x6c, 12);
+	clk[IMX6QDL_CLK_EPIT2]         = imx_clk_gate2("epit2",          "ipg",             base + 0x6c, 14);
 	clk[IMX6QDL_CLK_ESAI_EXTAL]   = imx_clk_gate2_shared("esai_extal",   "esai_podf",   base + 0x6c, 16, &share_count_esai);
 	clk[IMX6QDL_CLK_ESAI_IPG]     = imx_clk_gate2_shared("esai_ipg",   "ahb",           base + 0x6c, 16, &share_count_esai);
 	clk[IMX6QDL_CLK_ESAI_MEM]     = imx_clk_gate2_shared("esai_mem", "ahb",             base + 0x6c, 16, &share_count_esai);
@@ -898,6 +901,19 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 #endif
 
 	imx6q_set_lpm(WAIT_CLOCKED);
+
+#ifdef MXC_TIMER_EPIT
+	np = of_find_compatible_node(NULL, NULL, "fsl,imx6q-epit");
+	base = of_iomap(np, 0);
+	WARN_ON(!base);
+	irq = irq_of_parse_and_map(np, 0);
+	epit_timer_init(base, irq);
+	pr_info("epit_timer_init irq %i\n", irq);
+#endif
+	np = of_find_compatible_node(NULL, NULL, "fsl,imx6q-epit");
+	base = of_iomap(np, 0);
+	WARN_ON(!base);
+	pr_info("epit base %x\n", (unsigned int)base);
 
 }
 CLK_OF_DECLARE(imx6q, "fsl,imx6q-ccm", imx6q_clocks_init);

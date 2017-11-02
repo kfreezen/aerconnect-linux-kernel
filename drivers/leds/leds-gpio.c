@@ -87,8 +87,7 @@ static int gpio_blink_set(struct led_classdev *led_cdev,
 
 static int create_gpio_led(const struct gpio_led *template,
 	struct gpio_led_data *led_dat, struct device *parent,
-	int (*blink_set)(struct gpio_desc *, int, unsigned long *,
-			 unsigned long *))
+	int (*blink_set)(struct gpio_desc *, int, unsigned long *, unsigned long *))
 {
 	int ret, state;
 

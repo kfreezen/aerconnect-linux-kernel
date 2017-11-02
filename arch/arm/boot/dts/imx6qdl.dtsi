@@ -837,11 +837,13 @@
 			};
 
 			epit1: epit@020d0000 { /* EPIT1 */
+                compatible = "fsl,imx6q-epit";
 				reg = <0x020d0000 0x4000>;
 				interrupts = <0 56 IRQ_TYPE_LEVEL_HIGH>;
 			};
 
 			epit2: epit@020d4000 { /* EPIT2 */
+                //compatible = "fsl,imx6q-epit";
 				reg = <0x020d4000 0x4000>;
 				interrupts = <0 57 IRQ_TYPE_LEVEL_HIGH>;
 			};

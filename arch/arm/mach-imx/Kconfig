@@ -43,6 +43,12 @@ config MXC_USE_EPIT
 	  uses the same clocks as the GPT. Anyway, on some systems the GPT
 	  may be in use for other purposes.
 
+config MXC_TIMER_EPIT
+	bool "Enable EPIT timer"
+	depends on HAVE_EPIT
+	help
+		Compiles epit.c for general use in kernel drivers
+
 config ARCH_HAS_RNGA
 	bool
 

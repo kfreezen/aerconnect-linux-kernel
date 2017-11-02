@@ -26,6 +26,7 @@ obj-$(CONFIG_MXC_TZIC) += tzic.o
 obj-$(CONFIG_MXC_AVIC) += avic.o
 
 obj-$(CONFIG_MXC_USE_EPIT) += epit.o
+obj-$(CONFIG_MXC_TIMER_EPIT) += epit.o
 obj-$(CONFIG_MXC_DEBUG_BOARD) += 3ds_debugboard.o
 
 ifeq ($(CONFIG_CPU_IDLE),y)
