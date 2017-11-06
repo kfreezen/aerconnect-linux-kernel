@@ -321,8 +321,8 @@
 		pinctrl-1 = <&pinctrl_touch>;
 		pinctrl-2 = <&pinctrl_touch>;
 		
-		//compatible = "focaltech,5x06", "ft5x06_ts";
-        compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
+		compatible = "focaltech,5x06", "ft5x06_ts";
+        //compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
 		reg = <0x38>;
 		focaltech,panel-coords = <0 0 480 800>;
 		focaltech,display-coords = <0 0 480 800>;

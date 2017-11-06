@@ -2061,6 +2061,12 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 
 	input_mt_init_slots(input_dev, pdata->num_max_touches, 0);
+
+	// udev requires ABS_X and ABS_Y to be defined in order for the ft5x06 to be
+	// detected as a touchscreen.
+	input_set_abs_params(input_dev, ABS_X, pdata->x_min, pdata->x_max, 0, 0);
+	input_set_abs_params(input_dev, ABS_Y, pdata->y_min, pdata->y_max, 0, 0);
+	
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, pdata->x_min,
 			     pdata->x_max, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, pdata->y_min,
@@ -2443,6 +2449,7 @@ static struct of_device_id ft5x06_match_table[] = {
 	{ .compatible = "focaltech,5x06",},
 	{ },
 };
+MODULE_DEVICE_TABLE(of, ft5x06_match_table);
 #else
 #define ft5x06_match_table NULL
 #endif
