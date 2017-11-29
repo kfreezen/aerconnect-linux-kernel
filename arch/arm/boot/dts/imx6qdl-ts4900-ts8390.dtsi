@@ -292,6 +292,20 @@
 	pinctrl-0 = <&pinctrl_sgtl5000>;
 };
 
+&ecspi2 {
+	fsl,spi-num-chipselects = <2>;
+	cs-gpios = <&gpio6 2 0>, <&gpio5 29 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2>;
+	status = "okay";
+
+	offbdspi: spi@1 {
+		compatible = "spidev";
+		reg = <1>;
+		spi-max-frequency = <1000000>;
+	};
+};
+
 &i2c2 {
 	status = "okay";
 	clock-frequency = <100000>;
@@ -486,9 +500,9 @@
 				MX6QDL_PAD_EIM_A16__GPIO2_IO22		0x1b088 /* EN_USB_5V# */
 				MX6QDL_PAD_EIM_A17__GPIO2_IO21		0x1b088 /* OFF_BD_RESET# */
 
-				MX6QDL_PAD_EIM_A24__GPIO5_IO04		0x1b088 /* DIO_00/OUT_0 */
-				MX6QDL_PAD_EIM_A23__GPIO6_IO06		0x1b088 /* DIO_01/OUT_1 */
-				MX6QDL_PAD_EIM_A22__GPIO2_IO16		0x1b088 /* DIO_02/OUT_2 */
+				MX6QDL_PAD_EIM_A24__GPIO5_IO04		0x13088 /* DIO_00/OUT_0 */
+				MX6QDL_PAD_EIM_A23__GPIO6_IO06		0x13088 /* DIO_01/OUT_1 */
+				MX6QDL_PAD_EIM_A22__GPIO2_IO16		0x13088 /* DIO_02/OUT_2 */
 				MX6QDL_PAD_EIM_EB1__GPIO2_IO29		0x1b088 /* DIO_23/OUT_3 */
 				MX6QDL_PAD_EIM_CS0__GPIO2_IO23		0x1b088 /* DIO_24/OUT_4 */
 				MX6QDL_PAD_EIM_LBA__GPIO2_IO27		0x1b088 /* DIO_26/OUT_5 */
