@@ -1,4 +1,10 @@
+#!/bin/sh
+
+if [ -z ${DEPLOYFROM+x} ]; then
+	DEPLOYFROM=/home/aercon/kernel-boot
+fi;
+
 mv /boot/uImage /boot/uImage.old
-cp /home/aercon/kernel-boot/uImage /boot
-cp /home/aercon/kernel-boot/imx6q-ts4900-2.dtb /boot
-cp /home/aercon/kernel-boot/imx6q-ts4900-2.dtb /boot/imx6q-ts4900-3f.dtb
+cp $DEPLOYFROM/uImage /boot
+cp $DEPLOYFROM/imx6q-ts4900-2.dtb /boot
+cp $DEPLOYFROM/imx6q-ts4900-2.dtb /boot/imx6q-ts4900-3f.dtb
